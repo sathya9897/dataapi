@@ -1,7 +1,15 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
-const transporter = require("./mailer");
+const nodemailer = require("nodemailer");
+const secrets = require("./secrets");
 
+let transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: secrets.email,
+    pass: secrets.pass
+  }
+});
 function CreateToken(payload) {
   jwt.sign(payload, "secret", { expiresIn: 2500000 }, function(err, token) {
     if (err) {
@@ -14,9 +22,8 @@ function CreateToken(payload) {
 }
 
 const userData = {
-  username: "sathya9897",
-  firstName: "sathya",
-  lastName: "reddy"
+  id: 25463571,
+  email: "sathyarox7@gmail.com"
 };
 
 router.get("/logout", (req, res) => {
