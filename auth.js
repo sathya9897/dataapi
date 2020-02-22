@@ -11,34 +11,36 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-function CreateToken(payload) {
-  jwt.sign(payload, "secret", { expiresIn: 2500000 }, function(err, token) {
-    if (err) {
-      return err;
-    }
-    setTimeout(() => {
-      return token;
-    }, 500);
-  });
-}
+function CreateToken(payload) {}
 
 router.get("/logout", (req, res) => {
   res.json({});
 });
 router.post("/signin/email", (req, res) => {
+  console.log(req.body);
   const userdata = {
     id: 5421578,
     email: req.body.email
   };
-  return res.json({ token: CreateToken(userdata) });
+  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
+    if (err) {
+      return res.status(500).json({ error: "something went wrong" });
+    }
+    return res.json({ token });
+  });
 });
 router.post("/signup/email", (req, res) => {
-  console.log(req.body);
   const userdata = {
     id: 5421578,
     email: req.body.email,
     newuser: true
   };
+  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
+    if (err) {
+      return res.status(500).json({ error: "something went wrong" });
+    }
+    return res.json({ token });
+  });
   let mailOptions = {
     from: "sathyarox7@gmail.com",
     to: req.body.email,
