@@ -17,7 +17,6 @@ router.get("/logout", (req, res) => {
   res.json({});
 });
 router.post("/signin/email", (req, res) => {
-  console.log(req.body);
   const userdata = {
     id: 5421578,
     email: req.body.email

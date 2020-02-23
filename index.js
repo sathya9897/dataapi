@@ -9,6 +9,7 @@ const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use("/analysis", Analysis);
 app.use("/auth", Auth);
