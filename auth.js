@@ -13,7 +13,7 @@ const transporter = nodemailer.createTransport({
 
 function CreateToken(payload) {}
 
-router.get("/logout", (req, res) => {
+router.post("/logout", (req, res) => {
   res.json({});
 });
 router.post("/signin/email", (req, res) => {
