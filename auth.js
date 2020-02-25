@@ -11,8 +11,6 @@ const transporter = nodemailer.createTransport({
   }
 });
 
-function CreateToken(payload) {}
-
 router.post("/logout", (req, res) => {
   res.json({});
 });
@@ -30,9 +28,9 @@ router.post("/signin/email", (req, res) => {
 });
 router.post("/signup/email", (req, res) => {
   const userdata = {
-    id: 5421578,
     email: req.body.email,
-    newuser: true
+    authType: "manual",
+    detailsForm: true
   };
   jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
     if (err) {
@@ -40,21 +38,37 @@ router.post("/signup/email", (req, res) => {
     }
     return res.json({ token });
   });
-  let mailOptions = {
-    from: "sathyarox7@gmail.com",
-    to: req.body.email,
-    subject: "Verify Your Email",
-    text: "The OTP to verify your account is 451245"
+});
+
+router.post("/signup/google", (req, res) => {
+  const userdata = {
+    email: "sathya@gmail.com",
+    detailsForm: true
   };
-  transporter.sendMail(mailOptions, (err, data) => {
+  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
     if (err) {
-      console.log(err);
-      res.status(500).json({ error: "something went wrong" });
-    } else {
-      console.log("EMAIL WAS SENT");
-      return res.json({ token: CreateToken(userdata) });
+      return res.status(500).json({ error: "something went wrong" });
     }
+    return res.json({ token });
   });
+  return res.status(401).json({ error: "Error authenticating" });
+});
+
+router.post("/verify", (req, res) => {
+  const vercode = 123456;
+  if (req.body.code === vercode) {
+    return res.json({ verified: true });
+  } else {
+    return res.status(401).json({ error: "incorret code" });
+  }
+});
+
+router.post("/details", (req, res) => {
+  if (req.body.keys().length >= 9) {
+    return res.json({ success: true });
+  } else {
+    return res.status(401).json({ error: "all fields are mandatory" });
+  }
 });
 
 module.exports = router;
