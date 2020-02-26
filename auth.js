@@ -29,7 +29,7 @@ router.post("/signin/email", (req, res) => {
     errors["password"] = "password should be atleast 8 characters";
   }
   if (Object.keys(errors).length > 0) {
-    return res.status(402).json(errors);
+    return res.status(402).json({ signin: errors });
   }
   jwt.sign(userdata, "secret", { expiresIn: 60 }, function(err, token) {
     if (err) {
@@ -56,7 +56,7 @@ router.post("/signup/email", (req, res) => {
     errors["confirm"] = "passwords didn't match";
   }
   if (Object.keys(errors).length > 0) {
-    return res.status(402).json(errors);
+    return res.status(402).json({ signup: errors });
   }
   jwt.sign(userdata, "secret", { expiresIn: 60 }, function(err, token) {
     if (err) {
@@ -82,7 +82,6 @@ router.post("/signup/google", (req, res) => {
 
 router.post("/verification", (req, res) => {
   const vercode = "123456";
-  console.log(req.body);
   if (req.body.code === vercode) {
     const userdata = {
       email: req.body.email,
@@ -92,12 +91,14 @@ router.post("/verification", (req, res) => {
     };
     jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
       if (err) {
-        return res.status(500).json({ error: "something went wrong" });
+        return res
+          .status(500)
+          .json({ server: { error: "something went wrong" } });
       }
       return res.json({ token });
     });
   } else {
-    return res.status(401).json({ error: "incorret code" });
+    return res.status(401).json({ verify: { code: "incorret code" } });
   }
 });
 
