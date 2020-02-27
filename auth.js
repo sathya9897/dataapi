@@ -129,6 +129,23 @@ router.post("/details", (req, res) => {
   if (pincode.length !== 6) {
     errors["pincode"] = "please enter a valid pincode";
   }
+  if (Object.keys(errors).length > 0) {
+    return res.status(402).json({ personalDetails: errors });
+  }
+  const userdata = {
+    email: req.body.email,
+    authType: "manual",
+    verified: true,
+    detailsUpdated: true
+  };
+  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
+    if (err) {
+      return res
+        .status(500)
+        .json({ server: { error: "something went wrong" } });
+    }
+    return res.json({ token });
+  });
 });
 
 module.exports = router;
