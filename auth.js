@@ -31,7 +31,10 @@ router.post("/signin/email", (req, res) => {
   if (Object.keys(errors).length > 0) {
     return res.status(402).json({ signin: errors });
   }
-  jwt.sign(userdata, "secret", { expiresIn: 60 }, function(err, token) {
+  jwt.sign(userdata, "secret", { expiresIn: 60 * 60 * 24 }, function(
+    err,
+    token
+  ) {
     if (err) {
       return res.status(500).json({ server: "something went wrong" });
     }
@@ -58,7 +61,10 @@ router.post("/signup/email", (req, res) => {
   if (Object.keys(errors).length > 0) {
     return res.status(402).json({ signup: errors });
   }
-  jwt.sign(userdata, "secret", { expiresIn: 60 }, function(err, token) {
+  jwt.sign(userdata, "secret", { expiresIn: 60 * 60 * 24 }, function(
+    err,
+    token
+  ) {
     if (err) {
       return res.status(500).json({ server: "something went wrong" });
     }
@@ -103,11 +109,25 @@ router.post("/verification", (req, res) => {
 });
 
 router.post("/details", (req, res) => {
-  console.log(req.body);
-  if (req.body) {
-    return res.json({ success: true });
-  } else {
-    return res.status(401).json({ error: "all fields are mandatory" });
+  const usernames = ["sathya", "sathyareddy", "sathya9897"];
+  const {
+    username,
+    firstName,
+    lastName,
+    gender,
+    dob,
+    city,
+    state,
+    pincode,
+    phoneNumber,
+    accountType
+  } = req.body;
+  let errors = {};
+  if (usernames.includes(username)) {
+    errors["username"] = `${username} is taken`;
+  }
+  if (pincode.length !== 6) {
+    errors["pincode"] = "please enter a valid pincode";
   }
 });
 
