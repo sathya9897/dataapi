@@ -1,6 +1,7 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
 const nodemailer = require("nodemailer");
+const fs = require("fs");
 const validator = require("validator");
 const secrets = require("./secrets");
 
@@ -110,18 +111,7 @@ router.post("/verification", (req, res) => {
 
 router.post("/details", (req, res) => {
   const usernames = ["sathya", "sathyareddy", "sathya9897"];
-  const {
-    username,
-    firstName,
-    lastName,
-    gender,
-    dob,
-    city,
-    state,
-    pincode,
-    phoneNumber,
-    accountType
-  } = req.body;
+  const { username, pincode } = req.body;
   let errors = {};
   if (usernames.includes(username)) {
     errors["username"] = `${username} is taken`;
@@ -132,12 +122,17 @@ router.post("/details", (req, res) => {
   if (Object.keys(errors).length > 0) {
     return res.status(402).json({ personalDetails: errors });
   }
+  fs.writeFileSync("personal.txt", JSON.stringify(req.body), err => {
+    if (err) console.log(err);
+    console.log("file created");
+  });
   const userdata = {
     email: req.body.email,
     authType: "manual",
     verified: true,
     detailsUpdated: true
   };
+  res.json({ personalDetails: req.body });
   jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
     if (err) {
       return res

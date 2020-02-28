@@ -5,6 +5,7 @@ const cors = require("cors");
 
 const Analysis = require("./analysis");
 const Auth = require("./auth");
+const Profile = require("./profile");
 const app = express();
 
 app.use(cors());
@@ -13,6 +14,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(morgan("tiny"));
 app.use("/analysis", Analysis);
 app.use("/auth", Auth);
+app.use(Profile);
 
 app.get("/", (req, res) => {
   res.send("hello world");
