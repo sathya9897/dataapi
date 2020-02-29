@@ -1,5 +1,5 @@
 const router = require("express").Router();
-const Data = require("./data");
+const Data = require("../data");
 
 router.get("/youtube-general", (req, res) => {
   setTimeout(() => {

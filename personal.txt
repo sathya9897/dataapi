@@ -1,1 +1,0 @@
-{"username":"tony_stark","firstName":"sathya","lastName":"reddy","gender":"male","dob":"27/01/2020","city":"Hyderabad","state":"Telangana","pincode":"500077","phoneNumber":"8801099038","accountType":"influencer"}

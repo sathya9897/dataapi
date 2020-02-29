@@ -2,11 +2,19 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
 const cors = require("cors");
+const mongoose = require("mongoose");
 
-const Analysis = require("./analysis");
-const Auth = require("./auth");
-const Profile = require("./profile");
+const Analysis = require("./routes/analysis");
+const Auth = require("./routes/auth");
+const Profile = require("./routes/profile");
 const app = express();
+
+mongoose
+  .connect("mongodb://test:test123@ds033754.mlab.com:33754/spearsocial", {
+    useNewUrlParser: true
+  })
+  .then(() => console.log("connected successfully to DB."))
+  .catch(err => console.log(err));
 
 app.use(cors());
 app.use(bodyParser.json());
