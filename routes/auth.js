@@ -1,50 +1,120 @@
 const router = require("express").Router();
 const jwt = require("jsonwebtoken");
+const bcrypt = require("bcryptjs");
 const validator = require("validator");
 
-router.post("/signin/email", (req, res) => {
-  let errors = {};
-  if (!validator.isEmail(req.body.email)) {
-    errors["email"] = "invalid email";
-  }
-  if (!validator.isLength(req.body.password, { min: 8 })) {
-    errors["password"] = "password should be atleast 8 characters";
-  }
-  if (Object.keys(errors).length > 0) {
-    return res.status(402).json({ signin: errors });
-  }
-});
+const User = require("../models/User");
+
 router.post("/signup/email", (req, res) => {
-  const userdata = {
-    email: req.body.email,
-    authType: "manual",
-    verified: false,
-    detailsUpdated: false
-  };
+  const { email, password, confirmPassword } = req.body;
   let errors = {};
-  if (!validator.isEmail(req.body.email)) {
+  if (!validator.isEmail(email)) {
     errors["email"] = "invalid email";
   }
-  if (!validator.isLength(req.body.password, { min: 8 })) {
+  if (!validator.isLength(password, { min: 8 })) {
     errors["password"] = "password should be atleast 8 characters";
   }
-  if (req.body.password !== req.body.confirmPassword) {
+  if (password !== confirmPassword) {
     errors["confirm"] = "passwords didn't match";
   }
   if (Object.keys(errors).length > 0) {
-    return res.status(402).json({ signup: errors });
+    return res.status(400).json({ signup: errors });
+  } else {
+    User.findOne({ email })
+      .then(user => {
+        if (user) {
+          res.status(400).json({ signup: { user: "user already exists" } });
+        } else {
+          const newUser = new User({
+            email,
+            password
+          });
+          //* create Salt and Hash
+          bcrypt.genSalt(10, (err, salt) => {
+            bcrypt.hash(newUser.password, salt, (err, hash) => {
+              if (err) throw err;
+              newUser.password = hash;
+              newUser.save().then(user => {
+                console.log("created user:", user);
+                const userdata = {
+                  email: user.email,
+                  authType: "manual",
+                  verified: false,
+                  detailsUpdated: false
+                };
+                jwt.sign(
+                  userdata,
+                  "secret",
+                  { expiresIn: 60 * 60 * 24 },
+                  function(err, token) {
+                    if (err) {
+                      return res
+                        .status(500)
+                        .json({ signup: { server: "something went wrong" } });
+                    }
+                    return res.json({ token });
+                  }
+                );
+              });
+            });
+          });
+        }
+      })
+      .catch(err => {
+        return res
+          .status(500)
+          .json({ signup: { server: "something went wrong" } });
+      });
   }
-  jwt.sign(userdata, "secret", { expiresIn: 60 * 60 * 24 }, function(
-    err,
-    token
-  ) {
-    if (err) {
-      return res
-        .status(500)
-        .json({ signup: { server: "something went wrong" } });
-    }
-    return res.json({ token });
-  });
+});
+
+router.post("/signin/email", (req, res) => {
+  const { email, password } = req.body;
+  let errors = {};
+  if (!validator.isEmail(email)) {
+    errors["email"] = "invalid email";
+  }
+  if (!validator.isLength(password, { min: 8 })) {
+    errors["password"] = "password should be atleast 8 characters";
+  }
+  if (Object.keys(errors).length > 0) {
+    return res.status(400).json({ signin: errors });
+  } else {
+    User.findOne({ email }).then(user => {
+      if (!user) {
+        res.status(400).json({ signup: { user: "user does not exists" } });
+      } else {
+        bcrypt.compare(password, user.password).then(isMatch => {
+          if (!isMatch) {
+            res
+              .status(400)
+              .json({ signup: { password: "incorrect password" } });
+          } else {
+            let userdata = {
+              email: user.email,
+              authType: "manual",
+              verified: user.verified,
+              detailsUpdated: false
+            };
+            if (user.username.length > 0) {
+              userdata["detailsUpdated"] = true;
+            }
+            jwt.sign(userdata, "secret", { expiresIn: 60 * 60 * 24 }, function(
+              err,
+              token
+            ) {
+              if (err) {
+                return res
+                  .status(500)
+                  .json({ signup: { server: "something went wrong" } });
+              }
+              return res.json({ token });
+            });
+          }
+        });
+      }
+    });
+  }
 });
 
 router.post("/signup/google", (req, res) => {
@@ -65,22 +135,59 @@ router.post("/signup/google", (req, res) => {
 router.post("/verification", (req, res) => {
   const vercode = "123456";
   if (req.body.code === vercode) {
-    const userdata = {
-      email: req.body.email,
-      authType: "manual",
-      verified: true,
-      detailsUpdated: false
-    };
-    jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
-      if (err) {
-        return res
-          .status(500)
-          .json({ server: { error: "something went wrong" } });
-      }
-      return res.json({ token });
+    jwt.verify(req.headers.authorization, "secret", function(err, decoded) {
+      User.findOneAndUpdate(
+        { email: decoded.email },
+        {
+          $set: {
+            verified: true
+          }
+        },
+        { useFindAndModify: false }
+      )
+        .then(res => {
+          console.log("res", res);
+          if (!res.ok) {
+            return res.status(400).json({ verify: { code: "incorret code" } });
+          } else {
+            console.log("decoded:", decoded);
+            User.findOne({ email: decoded.email }).then(user => {
+              console.log("findOne user", user);
+              if (!user) {
+                return res
+                  .status(400)
+                  .json({ verify: { code: "incorret code" } });
+              } else {
+                const userdata = {
+                  email: user.email,
+                  authType: "manual",
+                  verified: user.verified,
+                  detailsUpdated: false
+                };
+                console.log("user data of findone", userdata);
+                jwt.sign(
+                  userdata,
+                  "secret",
+                  { expiresIn: 60 * 60 * 24 },
+                  function(err, token) {
+                    if (err) {
+                      return res
+                        .status(500)
+                        .json({ signup: { server: "something went wrong" } });
+                    }
+                    return res.json({ token });
+                  }
+                );
+              }
+            });
+          }
+        })
+        .catch(err => {
+          return res.status(400).json({ verify: { code: "incorret code" } });
+        });
     });
   } else {
-    return res.status(401).json({ verify: { code: "incorret code" } });
+    return res.status(400).json({ verify: { code: "incorret code" } });
   }
 });
 
