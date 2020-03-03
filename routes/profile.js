@@ -1,5 +1,7 @@
 const router = require("express").Router();
-const fs = require("fs");
+const jwt = require("jsonwebtoken");
+
+const User = require("../models/User");
 
 router.get("/details", (req, res) => {
   let personalDetails = null;
@@ -21,12 +23,30 @@ router.get("/details", (req, res) => {
       }
     ]
   };
-  fs.readFile("personal.txt", (err, data) => {
+  jwt.verify(req.headers.authorization, "secret", function(err, decode) {
     if (err) {
-      console.log(err);
+      return res
+        .status(400)
+        .json({ verify: { server: "internal server error" } });
+    } else {
+      User.findOne({ email: decoded.email })
+        .then(user => {
+          if (!user) {
+            return res
+              .status(400)
+              .json({ details: { server: "internal server error" } });
+          } else {
+            const { password, date, _id, ...other } = user;
+            return res.json({ personalDetails: { ...other } });
+          }
+        })
+        .catch(err => {
+          console.log("error", err);
+          return res
+            .status(400)
+            .json({ details: { server: "internal server error" } });
+        });
     }
-    personalDetails = JSON.parse(data);
-    res.json({ accounts, personalDetails });
   });
 });
 

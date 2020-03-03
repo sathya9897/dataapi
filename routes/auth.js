@@ -35,26 +35,23 @@ router.post("/signup/email", (req, res) => {
               if (err) throw err;
               newUser.password = hash;
               newUser.save().then(user => {
-                console.log("created user:", user);
                 const userdata = {
                   email: user.email,
                   authType: "manual",
                   verified: false,
                   detailsUpdated: false
                 };
-                jwt.sign(
-                  userdata,
-                  "secret",
-                  { expiresIn: 60 * 60 * 24 },
-                  function(err, token) {
-                    if (err) {
-                      return res
-                        .status(500)
-                        .json({ signup: { server: "something went wrong" } });
-                    }
-                    return res.json({ token });
+                jwt.sign(userdata, "secret", { expiresIn: 60 * 2 }, function(
+                  err,
+                  token
+                ) {
+                  if (err) {
+                    return res
+                      .status(500)
+                      .json({ signup: { server: "something went wrong" } });
                   }
-                );
+                  return res.json({ token });
+                });
               });
             });
           });
@@ -136,55 +133,55 @@ router.post("/verification", (req, res) => {
   const vercode = "123456";
   if (req.body.code === vercode) {
     jwt.verify(req.headers.authorization, "secret", function(err, decoded) {
-      User.findOneAndUpdate(
-        { email: decoded.email },
-        {
-          $set: {
-            verified: true
-          }
-        },
-        { useFindAndModify: false }
-      )
-        .then(res => {
-          console.log("res", res);
-          if (!res.ok) {
-            return res.status(400).json({ verify: { code: "incorret code" } });
-          } else {
-            console.log("decoded:", decoded);
-            User.findOne({ email: decoded.email }).then(user => {
-              console.log("findOne user", user);
-              if (!user) {
-                return res
-                  .status(400)
-                  .json({ verify: { code: "incorret code" } });
-              } else {
-                const userdata = {
-                  email: user.email,
-                  authType: "manual",
-                  verified: user.verified,
-                  detailsUpdated: false
-                };
-                console.log("user data of findone", userdata);
-                jwt.sign(
-                  userdata,
-                  "secret",
-                  { expiresIn: 60 * 60 * 24 },
-                  function(err, token) {
+      if (err) {
+        return res
+          .status(400)
+          .json({ verify: { server: "internal server error" } });
+      } else {
+        User.findOneAndUpdate(
+          { email: decoded.email },
+          { $set: { verified: true } }
+        )
+          .then(function(user) {
+            if (!user) {
+              return res
+                .status(400)
+                .json({ verify: { server: "internal server error" } });
+            } else {
+              User.findOne({ email: decoded.email }).then(function(user) {
+                if (!user) {
+                  return res
+                    .status(400)
+                    .json({ verify: { server: "internal server error" } });
+                } else {
+                  const userdata = {
+                    email: user.email,
+                    authType: "manual",
+                    verified: user.verified,
+                    detailsUpdated: false
+                  };
+                  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(
+                    err,
+                    token
+                  ) {
                     if (err) {
                       return res
                         .status(500)
-                        .json({ signup: { server: "something went wrong" } });
+                        .json({ server: { error: "something went wrong" } });
                     }
                     return res.json({ token });
-                  }
-                );
-              }
-            });
-          }
-        })
-        .catch(err => {
-          return res.status(400).json({ verify: { code: "incorret code" } });
-        });
+                  });
+                }
+              });
+            }
+          })
+          .catch(function(err) {
+            console.log("error callback:", err);
+            return res
+              .status(400)
+              .json({ verify: { server: "internal server error" } });
+          });
+      }
     });
   } else {
     return res.status(400).json({ verify: { code: "incorret code" } });
@@ -204,21 +201,58 @@ router.post("/details", (req, res) => {
   if (Object.keys(errors).length > 0) {
     return res.status(402).json({ personalDetails: errors });
   }
-
-  const userdata = {
-    email: req.body.email,
-    authType: "manual",
-    verified: true,
-    detailsUpdated: true
-  };
-  res.json({ personalDetails: req.body });
-  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
+  jwt.verify(req.headers.authorization, "secret", function(err, decoded) {
     if (err) {
       return res
-        .status(500)
-        .json({ server: { error: "something went wrong" } });
+        .status(400)
+        .json({ verify: { server: "internal server error" } });
+    } else {
+      User.findOneAndUpdate({ email: decoded.email }, { $set: { ...req.body } })
+        .then(function(user) {
+          if (!user) {
+            return res
+              .status(400)
+              .json({ verify: { server: "internal server error" } });
+          } else {
+            User.findOne({ email: decoded.email }).then(function(user) {
+              if (!user) {
+                return res
+                  .status(400)
+                  .json({ verify: { server: "internal server error" } });
+              } else {
+                let tokendata = {
+                  email: user.email,
+                  verified: user.verified,
+                  detailsUpdated: false
+                };
+                if (user.username.length !== 0) {
+                  tokendata["detailsUpdated"] = true;
+                }
+                const personalDetails = {
+                  ...req.body
+                };
+                jwt.sign(tokendata, "secret", { expiresIn: 2500000 }, function(
+                  err,
+                  token
+                ) {
+                  if (err) {
+                    return res
+                      .status(500)
+                      .json({ server: { error: "something went wrong" } });
+                  }
+                  return res.json({ token: token, personalDetails });
+                });
+              }
+            });
+          }
+        })
+        .catch(function(err) {
+          console.log("error callback:", err);
+          return res
+            .status(400)
+            .json({ verify: { server: "internal server error" } });
+        });
     }
-    return res.json({ token });
   });
 });
 
