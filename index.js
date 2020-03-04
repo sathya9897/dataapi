@@ -18,7 +18,7 @@ app.use(express.json());
 app.use(morgan("tiny"));
 app.use("/analysis", require("./routes/analysis"));
 app.use("/auth", require("./routes/auth"));
-app.use(require("./routes/profile"));
+app.use("/", require("./routes/profile"));
 
 app.get("/", (req, res) => {
   res.send("hello world");

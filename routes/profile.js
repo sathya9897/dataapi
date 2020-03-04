@@ -4,7 +4,6 @@ const jwt = require("jsonwebtoken");
 const User = require("../models/User");
 
 router.get("/details", (req, res) => {
-  let personalDetails = null;
   const accounts = {
     youtube: [
       {
@@ -12,6 +11,12 @@ router.get("/details", (req, res) => {
         subscribers: 5214782,
         views: 75412452,
         videos: 842
+      },
+      {
+        name: "Dave2D",
+        subscribers: 521782,
+        views: 7541245,
+        videos: 872
       }
     ],
     twitter: [
@@ -23,7 +28,7 @@ router.get("/details", (req, res) => {
       }
     ]
   };
-  jwt.verify(req.headers.authorization, "secret", function(err, decode) {
+  jwt.verify(req.headers.authorization, "secret", function(err, decoded) {
     if (err) {
       return res
         .status(400)
@@ -36,8 +41,9 @@ router.get("/details", (req, res) => {
               .status(400)
               .json({ details: { server: "internal server error" } });
           } else {
-            const { password, date, _id, ...other } = user;
-            return res.json({ personalDetails: { ...other } });
+            console.log(user);
+            const { password, date, _id, __v, ...other } = user._doc;
+            return res.json({ accounts, personalDetails: { ...other } });
           }
         })
         .catch(err => {

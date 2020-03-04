@@ -37,9 +37,7 @@ router.post("/signup/email", (req, res) => {
               newUser.save().then(user => {
                 const userdata = {
                   email: user.email,
-                  authType: "manual",
-                  verified: false,
-                  detailsUpdated: false
+                  screen: "verify"
                 };
                 jwt.sign(userdata, "secret", { expiresIn: 60 * 2 }, function(
                   err,
@@ -88,13 +86,10 @@ router.post("/signin/email", (req, res) => {
               .json({ signup: { password: "incorrect password" } });
           } else {
             let userdata = {
-              email: user.email,
-              authType: "manual",
-              verified: user.verified,
-              detailsUpdated: false
+              email: user.email
             };
-            if (user.username.length > 0) {
-              userdata["detailsUpdated"] = true;
+            if (user.verified && !user.username) {
+              userdata["screen"] = "details";
             }
             jwt.sign(userdata, "secret", { expiresIn: 60 * 60 * 24 }, function(
               err,
@@ -156,9 +151,7 @@ router.post("/verification", (req, res) => {
                 } else {
                   const userdata = {
                     email: user.email,
-                    authType: "manual",
-                    verified: user.verified,
-                    detailsUpdated: false
+                    screen: "details"
                   };
                   jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(
                     err,
@@ -221,13 +214,8 @@ router.post("/details", (req, res) => {
                   .json({ verify: { server: "internal server error" } });
               } else {
                 let tokendata = {
-                  email: user.email,
-                  verified: user.verified,
-                  detailsUpdated: false
+                  email: user.email
                 };
-                if (user.username.length !== 0) {
-                  tokendata["detailsUpdated"] = true;
-                }
                 const personalDetails = {
                   ...req.body
                 };
