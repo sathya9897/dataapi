@@ -188,9 +188,6 @@ router.post("/details", (req, res) => {
   if (usernames.includes(username)) {
     errors["username"] = `${username} is taken`;
   }
-  if (pincode.length !== 6) {
-    errors["pincode"] = "please enter a valid pincode";
-  }
   if (Object.keys(errors).length > 0) {
     return res.status(402).json({ personalDetails: errors });
   }
