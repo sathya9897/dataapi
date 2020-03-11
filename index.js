@@ -15,10 +15,12 @@ mongoose
 
 app.use(cors());
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 app.use(morgan("tiny"));
 app.use("/analysis", require("./routes/analysis"));
 app.use("/auth", require("./routes/auth"));
 app.use("/", require("./routes/profile"));
+app.use("/", require("./routes/posting"));
 
 app.get("/", (req, res) => {
   res.send("hello world");
