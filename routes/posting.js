@@ -10,11 +10,23 @@ router.post("/posting/youtube", upload.any(), (req, res) => {
     req.files[0].buffer,
     (err, resp) => {
       if (err) {
-        return res.status(400).json({});
+        return res
+          .status(400)
+          .json({ posting: { youtube: "internal error occured" } });
       }
-      return res.status(200).json({});
+      return res.status(200).json({ success: true });
     }
   );
+});
+
+router.post("/posting/twitter", (req, res) => {
+  if (req.body.tweet.length > 0) {
+    return res.json({ success: true });
+  } else {
+    return res
+      .status(400)
+      .json({ posting: { twitter: "internal server error" } });
+  }
 });
 
 module.exports = router;

@@ -43,7 +43,10 @@ router.get("/details", (req, res) => {
           } else {
             console.log(user);
             const { password, date, _id, __v, ...other } = user._doc;
-            return res.json({ accounts, personalDetails: { ...other } });
+            return res.json({
+              accounts: accounts,
+              personalDetails: { ...other }
+            });
           }
         })
         .catch(err => {
