@@ -34,7 +34,7 @@ router.get("/leads", (req, res) => {
 router.get("/trending", (req, res) => {
   setTimeout(() => {
     res.json(Data.trending);
-  }, 500);
+  }, 1500);
 });
 
 module.exports = router;

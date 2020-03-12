@@ -3277,7 +3277,7 @@ const leads = {
 
 const trending = {
   global: {
-    world: ["#global1", "#global2", "#global3", "#global4", "#global5"],
+    overall: ["#global1", "#global2", "#global3", "#global4", "#global5"],
     india: ["#india1", "#india2", "#india3", "#india4", "#india5"],
     australia: [
       "#australia1",

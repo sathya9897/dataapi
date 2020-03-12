@@ -1,5 +1,4 @@
 const mongoose = require("mongoose");
-const DetailSchema = require("./UserDetails");
 
 const UserSchema = new mongoose.Schema({
   email: {
