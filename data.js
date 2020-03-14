@@ -3092,9 +3092,9 @@ const twgen = {
 
 const twuser = {
   sentiment_analysis: [
-    { label: "negative", angle: 45871 },
-    { label: "positive", angle: 25414 },
-    { label: "neutral", angle: 78520 }
+    { x: "negative", y: 45871 },
+    { x: "positive", y: 25414 },
+    { x: "neutral", y: 78520 }
   ],
   hashtags: [
     "#professionals",
@@ -3114,50 +3114,80 @@ const twuser = {
     { text: "videos", value: 24 },
     { text: "#wireless", value: 19 }
   ],
-  questions: [
-    "where can i buy this phone?",
-    "what is the price of 128gb version?",
-    "what color varients are available?",
-    "is there any discount available?",
-    "is it better than oneplus 7?"
-  ],
-  suggestions: [
-    "they should reduce the price.",
-    "they should improve quality of the camera.",
-    "this device needs a lot of bug fixes."
-  ],
+  questions: {
+    overall: [
+      "where can i buy this phone?",
+      "what is the price of 128gb version?",
+      "what color varients are available?",
+      "is there any discount available?",
+      "is it better than oneplus 7?"
+    ],
+    frequent: {
+      word1: [
+        "what is something for word1?",
+        "how do you another word1 sentence?",
+        "should i there is no way this is important?",
+        "word1 is a great suggestion?",
+        "what i know?"
+      ],
+      word2: [
+        "How the hell another word2 sentence?",
+        "word2 is a great qustion?"
+      ],
+      word3: [
+        "What is the use of this is something for word3?",
+        "do you know doing a great stuff bro?",
+        "How another word3 sentence?",
+        "where word3 is a great suggestion?"
+      ]
+    }
+  },
+  suggestions: {
+    overall: [
+      "can you please improve the quality of video",
+      "you need to upgrade your studio"
+    ],
+    frequent: {
+      word1: [
+        "this is something for word1",
+        "another word1 sentence",
+        "there is no way this is important",
+        "word1 is a great suggestion",
+        "yeah i know"
+      ],
+      word2: ["another word2 sentence", "word2 is a great suggestion"],
+      word3: [
+        "this is something for word3",
+        "you doing a great stuff bro",
+        "another word3 sentence",
+        "word3 is a great suggestion"
+      ]
+    }
+  },
   aspect_analysis: [
     {
       aspect: "mobile",
-      analysis: {
-        pos: 40,
-        neu: 18,
-        neg: 42
-      }
+      pos: 40,
+      neu: 18,
+      neg: 42
     },
     {
       aspect: "oneplus",
-      analysis: {
-        pos: 67,
-        neu: 13,
-        neg: 20
-      }
+      pos: 67,
+      neu: 13,
+      neg: 20
     },
     {
       aspect: "go pro",
-      analysis: {
-        pos: 41,
-        neu: 34,
-        neg: 25
-      }
+      pos: 41,
+      neu: 34,
+      neg: 25
     },
     {
       aspect: "quality",
-      analysis: {
-        pos: 35,
-        neu: 38,
-        neg: 27
-      }
+      pos: 35,
+      neu: 38,
+      neg: 27
     }
   ],
   stats: [
