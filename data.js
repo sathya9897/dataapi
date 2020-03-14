@@ -1,3 +1,4 @@
+// @route => /analysis/youtube-general
 const ytgen = {
   global: {
     views: [
@@ -476,7 +477,7 @@ const ytgen = {
     ]
   }
 };
-
+// @route => /analysis/youtube-user
 const ytuser = {
   sentiment_analysis: [
     { x: "negative", y: 45871 },
@@ -600,7 +601,7 @@ const ytuser = {
     { heading: "comments", count: 34201 }
   ]
 };
-
+// @route => /analysis/twitter-general
 const twgen = {
   categorywise_retweets: [
     {
@@ -3089,7 +3090,7 @@ const twgen = {
     }
   }
 };
-
+// @route => /analysis/twitter-user
 const twuser = {
   sentiment_analysis: [
     { x: "negative", y: 45871 },
@@ -3195,7 +3196,7 @@ const twuser = {
     { heading: "retweets", count: 5745 }
   ]
 };
-
+// @route => /analysis/twitter-search
 const twsearch = {
   daywise_tweets: [
     {
@@ -3342,7 +3343,7 @@ const twsearch = {
     total_tweets: 2451
   }
 };
-
+// @route => /analysis/leads
 const leads = {
   leads: [
     {
@@ -3364,7 +3365,7 @@ const leads = {
     }
   ]
 };
-
+// @route => /analysis/trending
 const trending = {
   global: {
     overall: ["#global1", "#global2", "#global3", "#global4", "#global5"],
