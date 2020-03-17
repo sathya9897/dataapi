@@ -8,12 +8,14 @@ router.get("/details", (req, res) => {
     youtube: [
       {
         name: "MKBHD",
+        id: 1,
         subscribers: 5214782,
         views: 75412452,
         videos: 842
       },
       {
         name: "Dave2D",
+        id: 2,
         subscribers: 521782,
         views: 7541245,
         videos: 872
@@ -22,6 +24,7 @@ router.get("/details", (req, res) => {
     twitter: [
       {
         name: "MKBHD",
+        id: 3,
         followers: 7512451,
         following: 315,
         tweets: 1421
@@ -57,6 +60,16 @@ router.get("/details", (req, res) => {
         });
     }
   });
+});
+
+router.post("/switch-account", (req, res) => {
+  return res.json(req.body);
+});
+
+router.get("/switch-account", (req, res) => {
+  setTimeout(() => {
+    return res.json({ platform: "youtube", id: 1 });
+  }, 500);
 });
 
 module.exports = router;

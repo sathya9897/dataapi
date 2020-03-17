@@ -559,7 +559,11 @@ const ytuser = {
           "another word1 sentence",
           "there is no way this is important",
           "word1 is a great suggestion",
-          "yeah i know"
+          "yeah i know",
+          "this is something for word1",
+          "another word1 sentence",
+          "there is no way this is important",
+          "word1 is a great suggestion"
         ],
         word2: ["another word2 sentence", "word2 is a great suggestion"],
         word3: [
@@ -577,14 +581,14 @@ const ytuser = {
         "this device needs a lot of bug fixes."
       ],
       frequent: {
-        word1: ["this is something for word1", "another word1 sentence"],
-        word2: [
+        word4: ["this is something for word1", "another word1 sentence"],
+        word5: [
           "this is something for word2",
           "another word2 sentence",
           "word2 is a great suggestion",
           "something very irrelevant"
         ],
-        word3: [
+        word6: [
           "this is something for word3",
           "another word3 sentence",
           "word3 is a great suggestion",
