@@ -525,7 +525,9 @@ const ytuser = {
       "what is the price of 128gb version?",
       "what color varients are available?",
       "is there any discount available?",
-      "is it better than oneplus 7?"
+      "is it better than oneplus 7?",
+      "How the hell another word2 sentence?",
+      "word2 is a great qustion?"
     ],
     frequent: {
       word1: [
@@ -551,7 +553,11 @@ const ytuser = {
     creator: {
       overall: [
         "can you please improve the quality of video",
-        "you need to upgrade your studio"
+        "you need to upgrade your studio",
+        "yeah i know",
+        "this is something for word1",
+        "another word1 sentence",
+        "there is no way this is important"
       ],
       frequent: {
         word1: [
@@ -578,7 +584,11 @@ const ytuser = {
       overall: [
         "they should reduce the price.",
         "they should improve quality of the camera.",
-        "this device needs a lot of bug fixes."
+        "this device needs a lot of bug fixes.",
+        "this is something for word2",
+        "another word2 sentence",
+        "word2 is a great suggestion",
+        "something very irrelevant"
       ],
       frequent: {
         word4: ["this is something for word1", "another word1 sentence"],

@@ -23,7 +23,9 @@ router.post("/signup/email", (req, res) => {
     User.findOne({ email })
       .then(user => {
         if (user) {
-          res.status(400).json({ signup: { user: "user already exists" } });
+          return res
+            .status(400)
+            .json({ signup: { user: "user already exists" } });
         } else {
           const newUser = new User({
             email,
@@ -77,13 +79,13 @@ router.post("/signin/email", (req, res) => {
   } else {
     User.findOne({ email }).then(user => {
       if (!user) {
-        res.status(400).json({ signup: { user: "user does not exists" } });
+        res.status(400).json({ signin: { user: "user does not exists" } });
       } else {
         bcrypt.compare(password, user.password).then(isMatch => {
           if (!isMatch) {
             res
               .status(400)
-              .json({ signup: { password: "incorrect password" } });
+              .json({ signin: { password: "incorrect password" } });
           } else {
             let userdata = {
               email: user.email
@@ -98,7 +100,7 @@ router.post("/signin/email", (req, res) => {
               if (err) {
                 return res
                   .status(500)
-                  .json({ signup: { server: "something went wrong" } });
+                  .json({ signin: { server: "something went wrong" } });
               }
               return res.json({ token });
             });
