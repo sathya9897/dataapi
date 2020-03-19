@@ -1,5 +1,6 @@
 const express = require("express");
 const morgan = require("morgan");
+const path = require("path");
 const cors = require("cors");
 const mongoose = require("mongoose");
 
@@ -13,6 +14,7 @@ mongoose
   .then(() => console.log("connected successfully to DB."))
   .catch(err => console.log(err));
 
+//app.use(express.static(path.join(__dirname, "public")));
 app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -22,9 +24,9 @@ app.use("/auth", require("./routes/auth"));
 app.use("/", require("./routes/profile"));
 app.use("/", require("./routes/posting"));
 
-app.get("/", (req, res) => {
-  res.send("hello world");
-});
+/* app.get("*", (req, res) => {
+  return res.sendFile(path.join(__dirname, "public") + "/index.html");
+}); */
 
 const PORT = 5000;
 

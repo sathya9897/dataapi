@@ -5,6 +5,7 @@ const fs = require("fs");
 const upload = multer();
 
 router.post("/posting/youtube", upload.any(), (req, res) => {
+  console.log(req.files[0].originalname);
   fs.writeFile(
     "./videos/" + req.files[0].originalname,
     req.files[0].buffer,

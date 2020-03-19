@@ -90,6 +90,9 @@ router.post("/signin/email", (req, res) => {
             let userdata = {
               email: user.email
             };
+            if (!user.verified) {
+              userdata["screen"] = "verify";
+            }
             if (user.verified && !user.username) {
               userdata["screen"] = "details";
             }
@@ -109,21 +112,6 @@ router.post("/signin/email", (req, res) => {
       }
     });
   }
-});
-
-router.post("/signup/google", (req, res) => {
-  const userdata = {
-    email: "sathya@gmail.com",
-    detailsForm: true
-  };
-  jwt.sign(userdata, "secret", { expiresIn: 2500000 }, function(err, token) {
-    if (err) {
-      return res
-        .status(500)
-        .json({ googleSignup: { server: "something went wrong" } });
-    }
-    return res.json({ token });
-  });
 });
 
 router.post("/verification", (req, res) => {
@@ -183,64 +171,59 @@ router.post("/verification", (req, res) => {
   }
 });
 
-router.post("/details", (req, res) => {
-  const usernames = ["sathya", "sathyareddy", "sathya9897"];
-  const { username, pincode } = req.body;
-  let errors = {};
-  if (usernames.includes(username)) {
-    errors["username"] = `${username} is taken`;
+router.get("/google", (req, res) => {
+  return res.redirect("/authorizing");
+});
+
+router.get("/jwt-token", (req, res) => {
+  setTimeout(() => {
+    const tokendata = {
+      email: "test31@gmail.com",
+      screen: "details"
+    };
+    jwt.sign(tokendata, "secret", { expiresIn: 2500000 }, function(err, token) {
+      if (err) {
+        return res
+          .status(500)
+          .json({ server: { error: "something went wrong" } });
+      }
+      return res.json({ token });
+    });
+  }, 2000);
+});
+
+router.post("/forgot-password", (req, res) => {
+  if (req.body.email.length === 0) {
+    return res
+      .status(400)
+      .json({ forgot: { email: "incorrect email address" } });
   }
-  if (Object.keys(errors).length > 0) {
-    return res.status(402).json({ personalDetails: errors });
-  }
-  jwt.verify(req.headers.authorization, "secret", function(err, decoded) {
-    if (err) {
-      return res
-        .status(400)
-        .json({ verify: { server: "internal server error" } });
+  setTimeout(() => {
+    const tokendata = {
+      email: req.body.email,
+      screen: "update"
+    };
+    jwt.sign(tokendata, "secret", { expiresIn: 2500000 }, function(err, token) {
+      if (err) {
+        return res
+          .status(500)
+          .json({ server: { error: "something went wrong" } });
+      }
+      return res.json({ token });
+    });
+  }, 2000);
+});
+
+router.post("/update-password", (req, res) => {
+  setTimeout(() => {
+    if (req.body.code === "123456") {
+      return res.json({ success: true });
     } else {
-      User.findOneAndUpdate({ email: decoded.email }, { $set: { ...req.body } })
-        .then(function(user) {
-          if (!user) {
-            return res
-              .status(400)
-              .json({ verify: { server: "internal server error" } });
-          } else {
-            User.findOne({ email: decoded.email }).then(function(user) {
-              if (!user) {
-                return res
-                  .status(400)
-                  .json({ verify: { server: "internal server error" } });
-              } else {
-                let tokendata = {
-                  email: user.email
-                };
-                const personalDetails = {
-                  ...req.body
-                };
-                jwt.sign(tokendata, "secret", { expiresIn: 2500000 }, function(
-                  err,
-                  token
-                ) {
-                  if (err) {
-                    return res
-                      .status(500)
-                      .json({ server: { error: "something went wrong" } });
-                  }
-                  return res.json({ token: token, personalDetails });
-                });
-              }
-            });
-          }
-        })
-        .catch(function(err) {
-          console.log("error callback:", err);
-          return res
-            .status(400)
-            .json({ verify: { server: "internal server error" } });
-        });
+      return res.status(400).json({
+        update: { code: "incorrect code", password: "password did not match" }
+      });
     }
-  });
+  }, 2000);
 });
 
 module.exports = router;
